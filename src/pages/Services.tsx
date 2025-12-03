@@ -13,10 +13,19 @@ import {
   Zap,
 } from "lucide-react";
 
+// Service images
+import itSupportImg from "@/assets/services/it-support.jpg";
+import aiMlImg from "@/assets/services/ai-ml.jpg";
+import webHostingImg from "@/assets/services/web-hosting.jpg";
+import cloudSolutionsImg from "@/assets/services/cloud-solutions.jpg";
+import softwareDevImg from "@/assets/services/software-development.jpg";
+import cybersecurityImg from "@/assets/services/cybersecurity.jpg";
+
 const services = [
   {
     id: "it-support",
     icon: Headphones,
+    image: itSupportImg,
     title: "IT Support",
     tagline: "24/7 Expert Technical Support",
     description:
@@ -34,6 +43,7 @@ const services = [
   {
     id: "ai-ml",
     icon: Brain,
+    image: aiMlImg,
     title: "AI & Machine Learning",
     tagline: "Intelligent Automation Solutions",
     description:
@@ -51,6 +61,7 @@ const services = [
   {
     id: "web-hosting",
     icon: Server,
+    image: webHostingImg,
     title: "Web Hosting",
     tagline: "High-Performance Hosting",
     description:
@@ -68,6 +79,7 @@ const services = [
   {
     id: "cloud",
     icon: Cloud,
+    image: cloudSolutionsImg,
     title: "Cloud Solutions",
     tagline: "Scalable Cloud Infrastructure",
     description:
@@ -85,6 +97,7 @@ const services = [
   {
     id: "development",
     icon: Code,
+    image: softwareDevImg,
     title: "Software Development",
     tagline: "Custom Digital Solutions",
     description:
@@ -102,6 +115,7 @@ const services = [
   {
     id: "security",
     icon: Shield,
+    image: cybersecurityImg,
     title: "Cybersecurity",
     tagline: "Comprehensive Protection",
     description:
@@ -191,13 +205,12 @@ export default function Services() {
                 <div
                   className={`${index % 2 === 1 ? "lg:order-1" : ""}`}
                 >
-                  <div className="glass-card rounded-2xl p-8 lg:p-12 bg-gradient-to-br from-secondary/50 to-background">
-                    <div className="aspect-square max-w-xs mx-auto flex items-center justify-center">
-                      <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30 rounded-full blur-3xl" />
-                        <service.icon className="w-32 h-32 text-primary relative animate-float" />
-                      </div>
-                    </div>
+                  <div className="glass-card rounded-2xl overflow-hidden">
+                    <img 
+                      src={service.image} 
+                      alt={service.title}
+                      className="w-full h-full object-cover aspect-[4/3]"
+                    />
                   </div>
                 </div>
               </div>
