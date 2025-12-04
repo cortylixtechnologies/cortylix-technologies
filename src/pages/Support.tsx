@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Headphones,
   Clock,
@@ -20,6 +23,7 @@ import {
   AlertTriangle,
   Shield,
   Zap,
+  LogIn,
 } from "lucide-react";
 
 const priorities = [
@@ -49,14 +53,12 @@ const features = [
 
 export default function Support() {
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [ticketId, setTicketId] = useState("");
+  const [ticketNumber, setTicketNumber] = useState("");
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    company: "",
-    phone: "",
     issueTitle: "",
     description: "",
     priority: "",
@@ -64,20 +66,57 @@ export default function Support() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to submit a ticket.",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    if (!formData.priority) {
+      toast({
+        title: "Priority Required",
+        description: "Please select a priority level.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const { data, error } = await supabase
+      .from("tickets")
+      .insert({
+        user_id: user.id,
+        title: formData.issueTitle,
+        description: formData.description,
+        priority: formData.priority as "low" | "medium" | "high" | "urgent",
+        ticket_number: "TEMP", // Will be overwritten by database trigger
+      })
+      .select("ticket_number")
+      .single();
 
-    // Generate ticket ID
-    const newTicketId = `CTX-${Date.now().toString(36).toUpperCase()}`;
-    setTicketId(newTicketId);
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit ticket. Please try again.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    setTicketNumber(data.ticket_number);
     setSubmitted(true);
     setIsSubmitting(false);
 
     toast({
       title: "Ticket Submitted Successfully!",
-      description: `Your ticket ID is ${newTicketId}. We'll get back to you shortly.`,
+      description: `Your ticket ID is ${data.ticket_number}. We'll get back to you shortly.`,
     });
   };
 
@@ -108,16 +147,20 @@ export default function Support() {
                   Your Ticket ID
                 </p>
                 <p className="text-2xl font-display font-bold text-primary">
-                  {ticketId}
+                  {ticketNumber}
                 </p>
               </div>
-              <p className="text-sm text-muted-foreground mb-6">
-                A confirmation email has been sent to{" "}
-                <span className="text-foreground">{formData.email}</span>
-              </p>
-              <Button onClick={() => setSubmitted(false)}>
-                Submit Another Ticket
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link to="/my-tickets">
+                  <Button>View My Tickets</Button>
+                </Link>
+                <Button variant="outline" onClick={() => {
+                  setSubmitted(false);
+                  setFormData({ issueTitle: "", description: "", priority: "" });
+                }}>
+                  Submit Another Ticket
+                </Button>
+              </div>
             </div>
           </div>
         </section>
@@ -174,205 +217,173 @@ export default function Support() {
       {/* Form Section */}
       <section className="section-padding bg-background">
         <div className="container mx-auto">
-          <div className="grid lg:grid-cols-3 gap-12">
-            {/* Form */}
-            <div className="lg:col-span-2">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name *</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="john@company.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+          {!authLoading && !user ? (
+            <div className="max-w-lg mx-auto text-center">
+              <div className="glass-card rounded-2xl p-8">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+                  <LogIn className="w-8 h-8 text-primary" />
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="company">Company (Optional)</Label>
-                    <Input
-                      id="company"
-                      name="company"
-                      placeholder="Your Company"
-                      value={formData.company}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number (Optional)</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="+1 (234) 567-890"
-                      value={formData.phone}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="issueTitle">Issue Title *</Label>
-                  <Input
-                    id="issueTitle"
-                    name="issueTitle"
-                    placeholder="Brief description of the issue"
-                    value={formData.issueTitle}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Detailed Description *</Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    placeholder="Please provide as much detail as possible about your issue, including any error messages, steps to reproduce, and when the issue started..."
-                    rows={6}
-                    value={formData.description}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label>Priority Level *</Label>
-                    <Select
-                      value={formData.priority}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, priority: value })
-                      }
-                      required
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {priorities.map((priority) => (
-                          <SelectItem key={priority.value} value={priority.value}>
-                            <div className="flex items-center gap-2">
-                              <span>{priority.label}</span>
-                              <span className="text-muted-foreground text-xs">
-                                - {priority.description}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Attachment (Optional)</Label>
-                    <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                      <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">
-                        Click to upload logs or screenshots
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <Button type="submit" size="lg" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <span className="animate-pulse">Submitting...</span>
-                    </>
-                  ) : (
-                    <>
-                      Submit Ticket
-                      <Zap className="w-4 h-4" />
-                    </>
-                  )}
-                </Button>
-              </form>
+                <h2 className="text-xl font-semibold text-foreground mb-2">
+                  Sign in to Submit Tickets
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  Create an account or sign in to submit and track your support tickets.
+                </p>
+                <Link to="/auth">
+                  <Button size="lg">Sign In / Sign Up</Button>
+                </Link>
+              </div>
             </div>
+          ) : (
+            <div className="grid lg:grid-cols-3 gap-12">
+              {/* Form */}
+              <div className="lg:col-span-2">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="issueTitle">Issue Title *</Label>
+                    <Input
+                      id="issueTitle"
+                      name="issueTitle"
+                      placeholder="Brief description of the issue"
+                      value={formData.issueTitle}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              <div className="glass-card rounded-2xl p-6">
-                <h3 className="font-display font-semibold text-foreground mb-4">
-                  What happens next?
-                </h3>
-                <ol className="space-y-4">
-                  <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">
-                      1
-                    </span>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        Ticket Created
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        You'll receive a confirmation email
-                      </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Detailed Description *</Label>
+                    <Textarea
+                      id="description"
+                      name="description"
+                      placeholder="Please provide as much detail as possible about your issue, including any error messages, steps to reproduce, and when the issue started..."
+                      rows={6}
+                      value={formData.description}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Priority Level *</Label>
+                      <Select
+                        value={formData.priority}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, priority: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {priorities.map((priority) => (
+                            <SelectItem key={priority.value} value={priority.value}>
+                              <div className="flex items-center gap-2">
+                                <span>{priority.label}</span>
+                                <span className="text-muted-foreground text-xs">
+                                  - {priority.description}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">
-                      2
-                    </span>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        Team Review
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        Our experts assess your issue
-                      </p>
+                    <div className="space-y-2">
+                      <Label>Attachment (Optional)</Label>
+                      <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                        <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">
+                          Click to upload logs or screenshots
+                        </p>
+                      </div>
                     </div>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">
-                      3
-                    </span>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        Resolution
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        We work to resolve your issue
-                      </p>
-                    </div>
-                  </li>
-                </ol>
+                  </div>
+
+                  <Button type="submit" size="lg" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <span className="animate-pulse">Submitting...</span>
+                      </>
+                    ) : (
+                      <>
+                        Submit Ticket
+                        <Zap className="w-4 h-4" />
+                      </>
+                    )}
+                  </Button>
+                </form>
               </div>
 
-              <div className="glass-card rounded-2xl p-6 bg-destructive/5 border-destructive/20">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-1">
-                      Emergency Support
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-3">
-                      For critical system outages, call our emergency hotline:
-                    </p>
-                    <p className="font-semibold text-foreground">
-                      +1 (800) 555-0199
-                    </p>
+              {/* Sidebar */}
+              <div className="space-y-6">
+                <div className="glass-card rounded-2xl p-6">
+                  <h3 className="font-display font-semibold text-foreground mb-4">
+                    What happens next?
+                  </h3>
+                  <ol className="space-y-4">
+                    <li className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">
+                        1
+                      </span>
+                      <div>
+                        <p className="font-medium text-foreground">
+                          Ticket Created
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          You'll receive a confirmation email
+                        </p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">
+                        2
+                      </span>
+                      <div>
+                        <p className="font-medium text-foreground">
+                          Team Review
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          Our experts assess your issue
+                        </p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">
+                        3
+                      </span>
+                      <div>
+                        <p className="font-medium text-foreground">
+                          Resolution
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          We work to resolve your issue
+                        </p>
+                      </div>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="glass-card rounded-2xl p-6 bg-destructive/5 border-destructive/20">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">
+                        Emergency Support
+                      </h3>
+                      <p className="text-muted-foreground text-sm mb-3">
+                        For critical system outages, call our emergency hotline:
+                      </p>
+                      <p className="font-semibold text-foreground">
+                        +1 (800) 555-0199
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
     </Layout>
