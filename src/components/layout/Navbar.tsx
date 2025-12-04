@@ -1,8 +1,16 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, LogOut, Ticket, Shield, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -15,6 +23,13 @@ const navLinks = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAdmin, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
@@ -55,9 +70,38 @@ export function Navbar() {
                 IT Support
               </Button>
             </Link>
-            <Link to="/contact">
-              <Button size="sm">Get Started</Button>
-            </Link>
+            
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="ghost" className="gap-2">
+                    <User className="w-4 h-4" />
+                    Account
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate("/my-tickets")}>
+                    <Ticket className="w-4 h-4 mr-2" />
+                    My Tickets
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      <Shield className="w-4 h-4 mr-2" />
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/auth">
+                <Button size="sm">Sign In</Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -92,15 +136,43 @@ export function Navbar() {
                   {link.name}
                 </Link>
               ))}
+              
+              {user && (
+                <>
+                  <Link
+                    to="/my-tickets"
+                    className="px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    My Tickets
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Admin Panel
+                    </Link>
+                  )}
+                </>
+              )}
+              
               <div className="flex flex-col gap-2 mt-4 px-4">
                 <Link to="/support" onClick={() => setIsOpen(false)}>
                   <Button variant="outline" className="w-full">
                     IT Support
                   </Button>
                 </Link>
-                <Link to="/contact" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full">Get Started</Button>
-                </Link>
+                {user ? (
+                  <Button className="w-full" onClick={() => { handleSignOut(); setIsOpen(false); }}>
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full">Sign In</Button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
