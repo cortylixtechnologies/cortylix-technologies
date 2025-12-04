@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Headphones,
   Brain,
@@ -158,14 +159,24 @@ export default function Services() {
         <div className="container mx-auto">
           <div className="space-y-20">
             {services.map((service, index) => (
-              <div
+              <motion.div
                 key={service.id}
                 id={service.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
                 className={`grid lg:grid-cols-2 gap-12 items-center ${
                   index % 2 === 1 ? "lg:flex-row-reverse" : ""
                 }`}
               >
-                <div className={index % 2 === 1 ? "lg:order-2" : ""}>
+                <motion.div 
+                  className={index % 2 === 1 ? "lg:order-2" : ""}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                >
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                       <service.icon className="w-7 h-7 text-primary-foreground" />
@@ -201,9 +212,13 @@ export default function Services() {
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </Link>
-                </div>
-                <div
+                </motion.div>
+                <motion.div
                   className={`${index % 2 === 1 ? "lg:order-1" : ""}`}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? 30 : -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
                 >
                   <div className="glass-card rounded-2xl overflow-hidden">
                     <img 
@@ -212,8 +227,8 @@ export default function Services() {
                       className="w-full h-full object-cover aspect-[4/3]"
                     />
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             ))}
           </div>
         </div>
