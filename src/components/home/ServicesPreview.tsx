@@ -1,49 +1,49 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { 
-  Headphones, 
-  Brain, 
-  Server, 
-  Cloud, 
-  Code, 
-  Shield,
-  ArrowRight 
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
+
+// Service images
+import itSupportImg from "@/assets/services/it-support.jpg";
+import aiMlImg from "@/assets/services/ai-ml.jpg";
+import webHostingImg from "@/assets/services/web-hosting.jpg";
+import cloudSolutionsImg from "@/assets/services/cloud-solutions.jpg";
+import softwareDevImg from "@/assets/services/software-development.jpg";
+import cybersecurityImg from "@/assets/services/cybersecurity.jpg";
 
 const services = [
   {
-    icon: Headphones,
+    image: itSupportImg,
     title: "IT Support",
     description: "24/7 remote and onsite technical support with rapid response times.",
     href: "/support",
     highlight: true,
   },
   {
-    icon: Brain,
+    image: aiMlImg,
     title: "AI & Machine Learning",
     description: "Custom AI solutions to automate processes and unlock insights.",
     href: "/services",
   },
   {
-    icon: Server,
+    image: webHostingImg,
     title: "Web Hosting",
     description: "High-performance hosting with 99.9% uptime guarantee.",
     href: "/services",
   },
   {
-    icon: Cloud,
+    image: cloudSolutionsImg,
     title: "Cloud Solutions",
     description: "Scalable cloud infrastructure and storage solutions.",
     href: "/services",
   },
   {
-    icon: Code,
+    image: softwareDevImg,
     title: "Software Development",
     description: "Custom web and mobile applications built for your needs.",
     href: "/services",
   },
   {
-    icon: Shield,
+    image: cybersecurityImg,
     title: "Cybersecurity",
     description: "Comprehensive security solutions to protect your business.",
     href: "/services",
@@ -73,30 +73,30 @@ export function ServicesPreview() {
             <Link
               key={service.title}
               to={service.href}
-              className={`group glass-card rounded-2xl p-8 hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 ${
-                service.highlight ? "border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5" : ""
+              className={`group glass-card rounded-2xl overflow-hidden hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 ${
+                service.highlight ? "border-primary/30" : ""
               }`}
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-colors ${
-                service.highlight 
-                  ? "bg-gradient-to-br from-primary to-accent" 
-                  : "bg-secondary group-hover:bg-primary/10"
-              }`}>
-                <service.icon className={`w-7 h-7 ${
-                  service.highlight ? "text-primary-foreground" : "text-primary"
-                }`} />
+              <div className="aspect-[16/10] overflow-hidden">
+                <img 
+                  src={service.image} 
+                  alt={service.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
               </div>
-              <h3 className="text-xl font-display font-semibold text-foreground mb-3 group-hover:text-primary transition-colors">
-                {service.title}
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                {service.description}
-              </p>
-              <span className="inline-flex items-center gap-2 text-primary font-medium text-sm">
-                Learn more
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
+              <div className="p-6">
+                <h3 className="text-xl font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                  {service.title}
+                </h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  {service.description}
+                </p>
+                <span className="inline-flex items-center gap-2 text-primary font-medium text-sm">
+                  Learn more
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </div>
             </Link>
           ))}
         </div>
