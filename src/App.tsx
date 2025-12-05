@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import MyTickets from "./pages/MyTickets";
 import Admin from "./pages/Admin";
+import TrackTicket from "./pages/TrackTicket";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/my-tickets" element={<MyTickets />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/track-ticket" element={<TrackTicket />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
