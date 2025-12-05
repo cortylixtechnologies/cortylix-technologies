@@ -48,7 +48,7 @@ export default function MyTickets() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate("/auth");
+      navigate("/track-ticket");
     }
   }, [user, authLoading, navigate]);
 

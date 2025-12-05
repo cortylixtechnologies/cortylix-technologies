@@ -98,9 +98,14 @@ export function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link to="/auth">
-                <Button size="sm">Sign In</Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link to="/track-ticket">
+                  <Button size="sm" variant="ghost">Track Ticket</Button>
+                </Link>
+                <Link to="/auth">
+                  <Button size="sm" variant="outline">Admin Login</Button>
+                </Link>
+              </div>
             )}
           </div>
 
@@ -169,9 +174,14 @@ export function Navbar() {
                     Sign Out
                   </Button>
                 ) : (
-                  <Link to="/auth" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full">Sign In</Button>
-                  </Link>
+                  <>
+                    <Link to="/track-ticket" onClick={() => setIsOpen(false)}>
+                      <Button variant="ghost" className="w-full">Track Ticket</Button>
+                    </Link>
+                    <Link to="/auth" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full">Admin Login</Button>
+                    </Link>
+                  </>
                 )}
               </div>
             </div>

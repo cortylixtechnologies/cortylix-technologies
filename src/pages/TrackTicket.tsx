@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Shield, Mail, Lock } from "lucide-react";
+import { Search, Mail, Lock } from "lucide-react";
 import { z } from "zod";
 
 const signInSchema = z.object({
@@ -14,7 +14,7 @@ const signInSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-export default function Auth() {
+export default function TrackTicket() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -23,20 +23,14 @@ export default function Auth() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const { toast } = useToast();
-  const { user, isAdmin, signIn } = useAuth();
+  const { user, signIn } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && isAdmin) {
-      navigate("/admin");
-    } else if (user && !isAdmin) {
-      toast({
-        title: "Access Denied",
-        description: "This login is for administrators only.",
-        variant: "destructive",
-      });
+    if (user) {
+      navigate("/my-tickets");
     }
-  }, [user, isAdmin, navigate, toast]);
+  }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,7 +64,7 @@ export default function Auth() {
           variant: "destructive",
         });
       }
-      // Navigation handled by useEffect when isAdmin is set
+      // Navigation handled by useEffect
     } finally {
       setIsLoading(false);
     }
@@ -84,13 +78,13 @@ export default function Auth() {
             <div className="glass-card rounded-2xl p-8">
               <div className="text-center mb-8">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-primary-foreground" />
+                  <Search className="w-8 h-8 text-primary-foreground" />
                 </div>
                 <h1 className="text-2xl font-display font-bold text-foreground">
-                  Admin Login
+                  Track Your Tickets
                 </h1>
                 <p className="text-muted-foreground mt-2">
-                  Sign in to access the admin dashboard
+                  Sign in with the email and password you used when submitting your ticket
                 </p>
               </div>
 
@@ -103,7 +97,7 @@ export default function Auth() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="admin@example.com"
+                      placeholder="john@example.com"
                       value={formData.email}
                       onChange={handleChange}
                       className="pl-10"
@@ -134,15 +128,15 @@ export default function Auth() {
                 </div>
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Please wait..." : "Sign In"}
+                  {isLoading ? "Please wait..." : "View My Tickets"}
                 </Button>
               </form>
 
               <div className="mt-6 text-center">
                 <p className="text-muted-foreground text-sm">
-                  Looking to track a support ticket?{" "}
-                  <a href="/track-ticket" className="text-primary hover:underline font-medium">
-                    Track Ticket
+                  Need to submit a new ticket?{" "}
+                  <a href="/support" className="text-primary hover:underline font-medium">
+                    Submit Ticket
                   </a>
                 </p>
               </div>
