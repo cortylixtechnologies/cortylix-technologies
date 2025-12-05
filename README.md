@@ -1,73 +1,32 @@
-# Welcome to your Lovable project
+# 🚀 CORTYLIX TECHNOLOGIES
 
-## Project info
+Innovating the future through modern web engineering, clean architecture, and powerful developer-centric tools.
 
-**URL**: https://lovable.dev/projects/9c4ed270-2364-4a59-b07d-87c6fd9a3db5
+---
 
-## How can I edit this code?
+## 🔧 Built With
 
-There are several ways of editing your application.
+<p align="left">
 
-**Use Lovable**
+<!-- Large Icons (height=40px) -->
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9c4ed270-2364-4a59-b07d-87c6fd9a3db5) and start prompting.
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" height="40" />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" height="40" />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" height="40" />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" height="40" />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vite/vite-original.svg" height="40" />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg" height="40" />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/eslint/eslint-original.svg" height="40" />
+<img src="https://img.shields.io/badge/Zod-3E67B1?logo=zod&logoColor=white&style=for-the-badge" height="40" />
+<img src="https://img.shields.io/badge/React%20Hook%20Form-EC5990?logo=reacthookform&logoColor=white&style=for-the-badge" height="40" />
+<img src="https://img.shields.io/badge/PostCSS-DD3A0A?logo=postcss&logoColor=white&style=for-the-badge" height="40" />
+<img src="https://img.shields.io/badge/Autoprefixer-DD3735?logo=autoprefixer&logoColor=white&style=for-the-badge" height="40" />
+<img src="https://img.shields.io/badge/JSON-000000?logo=json&logoColor=white&style=for-the-badge" height="40" />
+<img src="https://img.shields.io/badge/Markdown-000000?logo=markdown&logoColor=white&style=for-the-badge" height="40" />
+<img src="https://img.shields.io/badge/TOML-9C4121?logo=toml&logoColor=white&style=for-the-badge" height="40" />
+<img src="https://img.shields.io/badge/date--fns-7700FF?logo=date-fns&logoColor=white&style=for-the-badge" height="40" />
 
-Changes made via Lovable will be committed automatically to this repo.
+</p>
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/9c4ed270-2364-4a59-b07d-87c6fd9a3db5) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
