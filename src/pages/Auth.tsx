@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Shield, Mail, Lock } from "lucide-react";
+import { Shield, Mail, Lock, User, UserPlus } from "lucide-react";
 import { z } from "zod";
 
 const signInSchema = z.object({
@@ -14,29 +14,39 @@ const signInSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+const signUpSchema = z.object({
+  fullName: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
 export default function Auth() {
+  const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
+    fullName: "",
     email: "",
     password: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const { toast } = useToast();
-  const { user, isAdmin, signIn } = useAuth();
+  const { user, isAdmin, loading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && isAdmin) {
-      navigate("/admin");
-    } else if (user && !isAdmin) {
-      toast({
-        title: "Access Denied",
-        description: "This login is for administrators only.",
-        variant: "destructive",
-      });
+    if (!loading && user) {
+      if (isAdmin) {
+        navigate("/admin");
+      } else {
+        toast({
+          title: "Access Denied",
+          description: "This login is for administrators only. Regular users should use 'Track Ticket' to view their tickets.",
+          variant: "destructive",
+        });
+      }
     }
-  }, [user, isAdmin, navigate, toast]);
+  }, [user, isAdmin, loading, navigate, toast]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,26 +59,63 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      const result = signInSchema.safeParse(formData);
-      if (!result.success) {
-        const fieldErrors: Record<string, string> = {};
-        result.error.errors.forEach((err) => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0] as string] = err.message;
-          }
-        });
-        setErrors(fieldErrors);
-        setIsLoading(false);
-        return;
-      }
+      if (isSignUp) {
+        const result = signUpSchema.safeParse(formData);
+        if (!result.success) {
+          const fieldErrors: Record<string, string> = {};
+          result.error.errors.forEach((err) => {
+            if (err.path[0]) {
+              fieldErrors[err.path[0] as string] = err.message;
+            }
+          });
+          setErrors(fieldErrors);
+          setIsLoading(false);
+          return;
+        }
 
-      const { error } = await signIn(formData.email, formData.password);
-      if (error) {
-        toast({
-          title: "Sign in failed",
-          description: "Invalid email or password. Please try again.",
-          variant: "destructive",
-        });
+        const { error } = await signUp(formData.email, formData.password, formData.fullName);
+        if (error) {
+          if (error.message.includes("already registered")) {
+            toast({
+              title: "Account exists",
+              description: "This email is already registered. Please sign in instead.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Sign up failed",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+        } else {
+          toast({
+            title: "Account created!",
+            description: "You are now logged in as admin.",
+          });
+        }
+      } else {
+        const result = signInSchema.safeParse(formData);
+        if (!result.success) {
+          const fieldErrors: Record<string, string> = {};
+          result.error.errors.forEach((err) => {
+            if (err.path[0]) {
+              fieldErrors[err.path[0] as string] = err.message;
+            }
+          });
+          setErrors(fieldErrors);
+          setIsLoading(false);
+          return;
+        }
+
+        const { error } = await signIn(formData.email, formData.password);
+        if (error) {
+          toast({
+            title: "Sign in failed",
+            description: "Invalid email or password. Please try again.",
+            variant: "destructive",
+          });
+        }
       }
       // Navigation handled by useEffect when isAdmin is set
     } finally {
@@ -84,17 +131,48 @@ export default function Auth() {
             <div className="glass-card rounded-2xl p-8">
               <div className="text-center mb-8">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-primary-foreground" />
+                  {isSignUp ? (
+                    <UserPlus className="w-8 h-8 text-primary-foreground" />
+                  ) : (
+                    <Shield className="w-8 h-8 text-primary-foreground" />
+                  )}
                 </div>
                 <h1 className="text-2xl font-display font-bold text-foreground">
-                  Admin Login
+                  {isSignUp ? "Admin Sign Up" : "Admin Login"}
                 </h1>
                 <p className="text-muted-foreground mt-2">
-                  Sign in to access the admin dashboard
+                  {isSignUp 
+                    ? "Create an admin account to manage the system" 
+                    : "Sign in to access the admin dashboard"}
                 </p>
+                {isSignUp && (
+                  <p className="text-xs text-primary mt-2 bg-primary/10 rounded-lg p-2">
+                    Note: The first user to sign up automatically becomes an admin
+                  </p>
+                )}
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {isSignUp && (
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="fullName"
+                        name="fullName"
+                        placeholder="John Doe"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        className="pl-10"
+                      />
+                    </div>
+                    {errors.fullName && (
+                      <p className="text-destructive text-sm">{errors.fullName}</p>
+                    )}
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <div className="relative">
@@ -134,11 +212,24 @@ export default function Auth() {
                 </div>
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Please wait..." : "Sign In"}
+                  {isLoading ? "Please wait..." : isSignUp ? "Create Admin Account" : "Sign In"}
                 </Button>
               </form>
 
-              <div className="mt-6 text-center">
+              <div className="mt-6 text-center space-y-3">
+                <p className="text-muted-foreground text-sm">
+                  {isSignUp ? "Already have an admin account?" : "Need to create an admin account?"}{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSignUp(!isSignUp);
+                      setErrors({});
+                    }}
+                    className="text-primary hover:underline font-medium"
+                  >
+                    {isSignUp ? "Sign in" : "Sign up"}
+                  </button>
+                </p>
                 <p className="text-muted-foreground text-sm">
                   Looking to track a support ticket?{" "}
                   <a href="/track-ticket" className="text-primary hover:underline font-medium">
