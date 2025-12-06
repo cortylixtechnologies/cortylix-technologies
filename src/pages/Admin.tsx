@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { PortfolioManager } from "@/components/admin/PortfolioManager";
 import {
   Shield,
   Clock,
@@ -23,6 +25,8 @@ import {
   Eye,
   Check,
   X,
+  Ticket,
+  FolderKanban,
 } from "lucide-react";
 
 interface TicketType {
@@ -67,6 +71,7 @@ export default function Admin() {
   const [adminNotes, setAdminNotes] = useState("");
   const [updating, setUpdating] = useState(false);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [activeTab, setActiveTab] = useState("tickets");
 
   useEffect(() => {
     if (!authLoading) {
@@ -174,120 +179,139 @@ export default function Admin() {
             <span className="text-primary font-medium">Admin Panel</span>
           </div>
           <h1 className="text-3xl lg:text-4xl font-display font-bold text-foreground">
-            Ticket Management
+            Admin Dashboard
           </h1>
           <p className="text-muted-foreground mt-2">
-            Review and process support tickets
+            Manage tickets and portfolio projects
           </p>
         </div>
       </section>
 
       <section className="section-padding bg-background">
         <div className="container mx-auto">
-          {/* Filters */}
-          <div className="flex gap-2 mb-6 flex-wrap">
-            {(["all", "pending", "approved", "rejected"] as const).map((f) => (
-              <Button
-                key={f}
-                variant={filter === f ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFilter(f)}
-              >
-                {f.charAt(0).toUpperCase() + f.slice(1)}
-                {f !== "all" && (
-                  <span className="ml-2 text-xs">
-                    ({tickets.filter((t) => t.status === f).length})
-                  </span>
-                )}
-              </Button>
-            ))}
-          </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger value="tickets" className="gap-2">
+                <Ticket className="w-4 h-4" />
+                Tickets
+              </TabsTrigger>
+              <TabsTrigger value="portfolio" className="gap-2">
+                <FolderKanban className="w-4 h-4" />
+                Portfolio
+              </TabsTrigger>
+            </TabsList>
 
-          {filteredTickets.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-muted-foreground">No tickets found.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredTickets.map((ticket) => {
-                const status = statusConfig[ticket.status];
-                const priority = priorityConfig[ticket.priority];
-                const StatusIcon = status.icon;
-                const profile = profiles[ticket.user_id];
-
-                return (
-                  <div
-                    key={ticket.id}
-                    className="glass-card rounded-xl p-6"
+            <TabsContent value="tickets">
+              {/* Filters */}
+              <div className="flex gap-2 mb-6 flex-wrap">
+                {(["all", "pending", "approved", "rejected"] as const).map((f) => (
+                  <Button
+                    key={f}
+                    variant={filter === f ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setFilter(f)}
                   >
-                    <div className="flex flex-col lg:flex-row lg:items-start gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2 flex-wrap">
-                          <span className="font-mono text-sm text-primary">
-                            {ticket.ticket_number}
-                          </span>
-                          <Badge variant="outline" className={priority.color}>
-                            {priority.label}
-                          </Badge>
-                          <Badge variant="outline" className={status.color}>
-                            <StatusIcon className="w-3 h-3 mr-1" />
-                            {status.label}
-                          </Badge>
-                        </div>
-                        <h3 className="font-semibold text-foreground mb-1">
-                          {ticket.title}
-                        </h3>
-                        <p className="text-muted-foreground text-sm mb-3">
-                          {ticket.description}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>
-                            By: {profile?.full_name || profile?.email || "Unknown"}
-                          </span>
-                          <span>
-                            {new Date(ticket.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedTicket(ticket);
-                            setAdminNotes(ticket.admin_notes || "");
-                          }}
-                        >
-                          <Eye className="w-4 h-4" />
-                          Review
-                        </Button>
-                        {ticket.status === "pending" && (
-                          <>
+                    {f.charAt(0).toUpperCase() + f.slice(1)}
+                    {f !== "all" && (
+                      <span className="ml-2 text-xs">
+                        ({tickets.filter((t) => t.status === f).length})
+                      </span>
+                    )}
+                  </Button>
+                ))}
+              </div>
+
+              {filteredTickets.length === 0 ? (
+                <div className="text-center py-16">
+                  <p className="text-muted-foreground">No tickets found.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredTickets.map((ticket) => {
+                    const status = statusConfig[ticket.status];
+                    const priority = priorityConfig[ticket.priority];
+                    const StatusIcon = status.icon;
+                    const profile = profiles[ticket.user_id];
+
+                    return (
+                      <div
+                        key={ticket.id}
+                        className="glass-card rounded-xl p-6"
+                      >
+                        <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2 flex-wrap">
+                              <span className="font-mono text-sm text-primary">
+                                {ticket.ticket_number}
+                              </span>
+                              <Badge variant="outline" className={priority.color}>
+                                {priority.label}
+                              </Badge>
+                              <Badge variant="outline" className={status.color}>
+                                <StatusIcon className="w-3 h-3 mr-1" />
+                                {status.label}
+                              </Badge>
+                            </div>
+                            <h3 className="font-semibold text-foreground mb-1">
+                              {ticket.title}
+                            </h3>
+                            <p className="text-muted-foreground text-sm mb-3">
+                              {ticket.description}
+                            </p>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <span>
+                                By: {profile?.full_name || profile?.email || "Unknown"}
+                              </span>
+                              <span>
+                                {new Date(ticket.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
                             <Button
                               variant="outline"
                               size="sm"
-                              className="text-green-600 hover:bg-green-50"
-                              onClick={() => updateTicketStatus(ticket.id, "approved")}
+                              onClick={() => {
+                                setSelectedTicket(ticket);
+                                setAdminNotes(ticket.admin_notes || "");
+                              }}
                             >
-                              <Check className="w-4 h-4" />
+                              <Eye className="w-4 h-4" />
+                              Review
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-red-600 hover:bg-red-50"
-                              onClick={() => updateTicketStatus(ticket.id, "rejected")}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </>
-                        )}
+                            {ticket.status === "pending" && (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-green-600 hover:bg-green-50"
+                                  onClick={() => updateTicketStatus(ticket.id, "approved")}
+                                >
+                                  <Check className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-600 hover:bg-red-50"
+                                  onClick={() => updateTicketStatus(ticket.id, "rejected")}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                    );
+                  })}
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="portfolio">
+              <PortfolioManager />
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
 
