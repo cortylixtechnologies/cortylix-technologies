@@ -1,6 +1,6 @@
 # 🚀 CORTYLIX TECHNOLOGIES
 
-Innovating the future through modern web engineering, clean architecture, and powerful developer-centric tools.
+Innovating the future through technology
 
 ---
 
