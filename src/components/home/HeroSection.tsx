@@ -54,9 +54,9 @@ export function HeroSection() {
             className="w-full h-full object-cover"
           />
         </AnimatePresence>
-        {/* Dark overlay for text visibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/85 to-navy/70" />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-transparent to-navy/50" />
+        {/* Light overlay for text visibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-transparent to-white/70" />
       </div>
 
       {/* Grid Pattern Overlay */}
@@ -66,21 +66,21 @@ export function HeroSection() {
         <div className="min-h-[calc(100vh-5rem)] flex items-center py-20">
           <div className="max-w-3xl">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 animate-fade-up backdrop-blur-sm">
-              <Sparkles className="w-4 h-4 text-accent" />
-              <span className="text-sm font-medium text-primary-foreground/80">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-8 animate-fade-up backdrop-blur-sm">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">
                 Leading IT Solutions Provider
               </span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-primary-foreground leading-tight mb-6 animate-fade-up animation-delay-100">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-foreground leading-tight mb-6 animate-fade-up animation-delay-100">
               Empowering Digital Growth with{" "}
               <span className="gradient-text">Intelligent Solutions</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg lg:text-xl text-primary-foreground/70 max-w-xl mb-10 animate-fade-up animation-delay-200">
+            <p className="text-lg lg:text-xl text-muted-foreground max-w-xl mb-10 animate-fade-up animation-delay-200">
               From AI-powered automation to cloud infrastructure, we deliver cutting-edge technology solutions that transform businesses and drive innovation.
             </p>
 
@@ -101,22 +101,22 @@ export function HeroSection() {
 
             {/* Trust Indicators */}
             <div className="flex flex-wrap gap-6 animate-fade-up animation-delay-400">
-              <div className="flex items-center gap-3 backdrop-blur-sm bg-white/5 px-4 py-3 rounded-xl">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-accent" />
+              <div className="flex items-center gap-3 backdrop-blur-sm bg-primary/5 border border-primary/20 px-4 py-3 rounded-xl">
+                <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-primary-foreground font-semibold">99.9%</p>
-                  <p className="text-primary-foreground/60 text-xs">Uptime SLA</p>
+                  <p className="text-foreground font-semibold">99.9%</p>
+                  <p className="text-muted-foreground text-xs">Uptime SLA</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 backdrop-blur-sm bg-white/5 px-4 py-3 rounded-xl">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-accent" />
+              <div className="flex items-center gap-3 backdrop-blur-sm bg-primary/5 border border-primary/20 px-4 py-3 rounded-xl">
+                <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-primary-foreground font-semibold">24/7</p>
-                  <p className="text-primary-foreground/60 text-xs">IT Support</p>
+                  <p className="text-foreground font-semibold">24/7</p>
+                  <p className="text-muted-foreground text-xs">IT Support</p>
                 </div>
               </div>
             </div>
@@ -132,8 +132,8 @@ export function HeroSection() {
             onClick={() => setCurrentIndex(index)}
             className={`w-2 h-2 rounded-full transition-all ${
               index === currentIndex
-                ? "bg-primary-foreground w-8"
-                : "bg-primary-foreground/40 hover:bg-primary-foreground/60"
+                ? "bg-primary w-8"
+                : "bg-primary/30 hover:bg-primary/50"
             }`}
           />
         ))}

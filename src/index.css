@@ -6,59 +6,59 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 30% 10%;
+    --background: 0 0% 100%;
+    --foreground: 220 30% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 30% 10%;
+    --card-foreground: 220 30% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 10%;
+    --popover-foreground: 220 30% 15%;
 
     --primary: 217 91% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 30% 10%;
+    --secondary: 220 20% 96%;
+    --secondary-foreground: 220 30% 15%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 10% 40%;
 
-    --accent: 190 95% 50%;
-    --accent-foreground: 220 30% 10%;
+    --accent: 190 95% 45%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
     --ring: 217 91% 50%;
 
     --radius: 0.75rem;
 
     /* Custom Cortylix tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 50%) 0%, hsl(190 95% 50%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(220 30% 8%) 0%, hsl(217 40% 18%) 50%, hsl(220 30% 12%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 14% 98%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(217 91% 50% / 0.15) 0%, transparent 70%);
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 50%) 0%, hsl(190 95% 45%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(217 91% 50%) 0%, hsl(190 95% 45%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 20% 98%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(217 91% 50% / 0.1) 0%, transparent 70%);
     
-    --shadow-soft: 0 4px 20px -4px hsl(220 30% 10% / 0.08);
-    --shadow-elevated: 0 12px 40px -12px hsl(220 30% 10% / 0.15);
-    --shadow-glow: 0 0 60px hsl(217 91% 50% / 0.3);
+    --shadow-soft: 0 4px 20px -4px hsl(220 30% 15% / 0.1);
+    --shadow-elevated: 0 12px 40px -12px hsl(220 30% 15% / 0.18);
+    --shadow-glow: 0 0 60px hsl(217 91% 50% / 0.2);
 
-    --navy: 220 30% 12%;
-    --navy-light: 217 40% 18%;
-    --cyan: 190 95% 50%;
-    --cyan-dark: 190 80% 40%;
+    --navy: 217 91% 25%;
+    --navy-light: 217 80% 35%;
+    --cyan: 190 95% 45%;
+    --cyan-dark: 190 80% 35%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 30% 15%;
+    --sidebar-primary: 217 91% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 96%;
+    --sidebar-accent-foreground: 220 30% 15%;
+    --sidebar-border: 220 13% 88%;
+    --sidebar-ring: 217 91% 50%;
   }
 
   .dark {
