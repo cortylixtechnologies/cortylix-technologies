@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import cortyLixLogo from "@/assets/cortylix-logo.png";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -36,13 +37,12 @@ export function Navbar() {
       <div className="container mx-auto">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-xl">C</span>
-            </div>
-            <span className="font-display font-semibold text-xl text-foreground">
-              Cortylix
-            </span>
+          <Link to="/" className="flex items-center">
+            <img 
+              src={cortyLixLogo} 
+              alt="Cortylix Technologies" 
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
