@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import cortyLixLogo from "@/assets/cortylix-logo.png";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -37,12 +36,14 @@ export function Navbar() {
       <div className="container mx-auto">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <img 
-              src={cortyLixLogo} 
-              alt="Cortylix Technologies" 
-              className="h-10 w-auto object-contain"
-            />
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center shadow-md">
+              <span className="text-primary-foreground font-display font-bold text-lg tracking-tight">CT</span>
+            </div>
+            <div className="flex flex-col leading-none">
+              <span className="font-display font-bold text-lg text-foreground">Cortylix</span>
+              <span className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">Technologies</span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -97,16 +98,7 @@ export function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/track-ticket">
-                  <Button size="sm" variant="ghost">Track Ticket</Button>
-                </Link>
-                <Link to="/auth">
-                  <Button size="sm" variant="outline">Admin Login</Button>
-                </Link>
-              </div>
-            )}
+            ) : null}
           </div>
 
           {/* Mobile Menu Button */}
@@ -173,16 +165,7 @@ export function Navbar() {
                   <Button className="w-full" onClick={() => { handleSignOut(); setIsOpen(false); }}>
                     Sign Out
                   </Button>
-                ) : (
-                  <>
-                    <Link to="/track-ticket" onClick={() => setIsOpen(false)}>
-                      <Button variant="ghost" className="w-full">Track Ticket</Button>
-                    </Link>
-                    <Link to="/auth" onClick={() => setIsOpen(false)}>
-                      <Button variant="outline" className="w-full">Admin Login</Button>
-                    </Link>
-                  </>
-                )}
+                ) : null}
               </div>
             </div>
           </div>
