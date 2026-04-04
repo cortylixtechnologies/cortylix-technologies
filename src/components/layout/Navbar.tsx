@@ -98,16 +98,7 @@ export function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/track-ticket">
-                  <Button size="sm" variant="ghost">Track Ticket</Button>
-                </Link>
-                <Link to="/auth">
-                  <Button size="sm" variant="outline">Admin Login</Button>
-                </Link>
-              </div>
-            )}
+            ) : null}
           </div>
 
           {/* Mobile Menu Button */}
