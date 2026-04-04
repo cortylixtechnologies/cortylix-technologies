@@ -3,13 +3,16 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-// Service images
 import itSupportImg from "@/assets/services/it-support.jpg";
 import aiMlImg from "@/assets/services/ai-ml.jpg";
 import webHostingImg from "@/assets/services/web-hosting.jpg";
 import cloudSolutionsImg from "@/assets/services/cloud-solutions.jpg";
 import softwareDevImg from "@/assets/services/software-development.jpg";
 import cybersecurityImg from "@/assets/services/cybersecurity.jpg";
+import dataAnalyticsImg from "@/assets/services/data-analytics.jpg";
+import networkingImg from "@/assets/services/networking.jpg";
+import itConsultingImg from "@/assets/services/it-consulting.jpg";
+import databaseImg from "@/assets/services/database-management.jpg";
 
 const services = [
   {
@@ -49,13 +52,36 @@ const services = [
     description: "Comprehensive security solutions to protect your business.",
     href: "/services",
   },
+  {
+    image: dataAnalyticsImg,
+    title: "Data Analytics",
+    description: "Business intelligence dashboards and actionable data insights.",
+    href: "/services",
+  },
+  {
+    image: networkingImg,
+    title: "Network Infrastructure",
+    description: "Enterprise networking setup, monitoring, and optimization.",
+    href: "/services",
+  },
+  {
+    image: itConsultingImg,
+    title: "IT Consulting",
+    description: "Strategic technology advisory to align IT with business goals.",
+    href: "/services",
+  },
+  {
+    image: databaseImg,
+    title: "Database Management",
+    description: "Reliable database design, migration, and administration.",
+    href: "/services",
+  },
 ];
 
 export function ServicesPreview() {
   return (
     <section className="section-padding bg-background">
       <div className="container mx-auto">
-        {/* Section Header */}
         <motion.div 
           className="text-center max-w-2xl mx-auto mb-16"
           initial={{ opacity: 0, y: 20 }}
@@ -74,15 +100,14 @@ export function ServicesPreview() {
           </p>
         </motion.div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {services.map((service, index) => (
             <motion.div
               key={service.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: index * 0.07 }}
             >
               <Link
                 to={service.href}
@@ -94,14 +119,15 @@ export function ServicesPreview() {
                   <img 
                     src={service.image} 
                     alt={service.title}
+                    loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                <div className="p-5">
+                  <h3 className="text-lg font-display font-semibold text-foreground mb-1.5 group-hover:text-primary transition-colors">
                     {service.title}
                   </h3>
-                  <p className="text-muted-foreground text-sm mb-4">
+                  <p className="text-muted-foreground text-sm mb-3">
                     {service.description}
                   </p>
                   <span className="inline-flex items-center gap-2 text-primary font-medium text-sm">
@@ -114,7 +140,6 @@ export function ServicesPreview() {
           ))}
         </div>
 
-        {/* CTA */}
         <motion.div 
           className="text-center mt-12"
           initial={{ opacity: 0, y: 20 }}
