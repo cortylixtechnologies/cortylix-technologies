@@ -12,15 +12,22 @@ import {
   ArrowRight,
   CheckCircle2,
   Zap,
+  BarChart3,
+  Network,
+  Briefcase,
+  Database,
 } from "lucide-react";
 
-// Service images
 import itSupportImg from "@/assets/services/it-support.jpg";
 import aiMlImg from "@/assets/services/ai-ml.jpg";
 import webHostingImg from "@/assets/services/web-hosting.jpg";
 import cloudSolutionsImg from "@/assets/services/cloud-solutions.jpg";
 import softwareDevImg from "@/assets/services/software-development.jpg";
 import cybersecurityImg from "@/assets/services/cybersecurity.jpg";
+import dataAnalyticsImg from "@/assets/services/data-analytics.jpg";
+import networkingImg from "@/assets/services/networking.jpg";
+import itConsultingImg from "@/assets/services/it-consulting.jpg";
+import databaseImg from "@/assets/services/database-management.jpg";
 
 const services = [
   {
@@ -131,12 +138,83 @@ const services = [
     ],
     cta: { text: "Secure Your Business", href: "/contact" },
   },
+  {
+    id: "data-analytics",
+    icon: BarChart3,
+    image: dataAnalyticsImg,
+    title: "Data Analytics",
+    tagline: "Business Intelligence & Insights",
+    description:
+      "Turn raw data into actionable insights with our data analytics services. We build custom dashboards and reporting tools to drive smarter business decisions.",
+    features: [
+      "Custom BI dashboards",
+      "Data warehousing",
+      "ETL pipeline development",
+      "Real-time analytics",
+      "Predictive modeling",
+      "Data visualization",
+    ],
+    cta: { text: "Unlock Insights", href: "/contact" },
+  },
+  {
+    id: "networking",
+    icon: Network,
+    image: networkingImg,
+    title: "Network Infrastructure",
+    tagline: "Enterprise Networking Solutions",
+    description:
+      "Design, deploy, and manage robust network infrastructure for your organization. We ensure reliable connectivity and optimal performance across your entire network.",
+    features: [
+      "Network design & architecture",
+      "LAN/WAN setup & management",
+      "VPN & remote access solutions",
+      "Network performance monitoring",
+      "Wireless network deployment",
+      "Network security hardening",
+    ],
+    cta: { text: "Get Connected", href: "/contact" },
+  },
+  {
+    id: "it-consulting",
+    icon: Briefcase,
+    image: itConsultingImg,
+    title: "IT Consulting",
+    tagline: "Strategic Technology Advisory",
+    description:
+      "Align your technology strategy with your business goals. Our experienced consultants help you plan, implement, and optimize IT investments for maximum ROI.",
+    features: [
+      "IT strategy development",
+      "Technology roadmap planning",
+      "Digital transformation advisory",
+      "Vendor evaluation & selection",
+      "IT budget optimization",
+      "Compliance & governance",
+    ],
+    cta: { text: "Book Consultation", href: "/contact" },
+  },
+  {
+    id: "database-management",
+    icon: Database,
+    image: databaseImg,
+    title: "Database Management",
+    tagline: "Reliable Data Management",
+    description:
+      "Professional database design, administration, and optimization services. We ensure your data is secure, well-organized, and always accessible when you need it.",
+    features: [
+      "Database design & modeling",
+      "Migration & upgrades",
+      "Performance tuning",
+      "Backup & disaster recovery",
+      "High availability setup",
+      "Database security & encryption",
+    ],
+    cta: { text: "Manage Data", href: "/contact" },
+  },
 ];
 
 export default function Services() {
   return (
     <Layout>
-      {/* Hero Section */}
       <section className="section-padding bg-secondary/30">
         <div className="container mx-auto">
           <div className="max-w-3xl">
@@ -154,7 +232,6 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Services List */}
       <section className="section-padding bg-background">
         <div className="container mx-auto">
           <div className="space-y-20">
@@ -197,17 +274,12 @@ export default function Services() {
                     {service.features.map((feature) => (
                       <li key={feature} className="flex items-center gap-2">
                         <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
-                        <span className="text-foreground text-sm">
-                          {feature}
-                        </span>
+                        <span className="text-foreground text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   <Link to={service.cta.href}>
-                    <Button
-                      variant={service.cta.primary ? "default" : "outline"}
-                      size="lg"
-                    >
+                    <Button variant={service.cta.primary ? "default" : "outline"} size="lg">
                       {service.cta.text}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
@@ -224,6 +296,7 @@ export default function Services() {
                     <img 
                       src={service.image} 
                       alt={service.title}
+                      loading="lazy"
                       className="w-full h-full object-cover aspect-[4/3]"
                     />
                   </div>
@@ -234,7 +307,6 @@ export default function Services() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="section-padding bg-navy">
         <div className="container mx-auto text-center">
           <Zap className="w-12 h-12 text-accent mx-auto mb-6" />

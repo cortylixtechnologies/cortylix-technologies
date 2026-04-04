@@ -26,6 +26,7 @@ import {
   Mail,
   Lock,
   User,
+  LogIn,
 } from "lucide-react";
 import { z } from "zod";
 
@@ -37,33 +38,23 @@ const priorities = [
 ];
 
 const features = [
-  {
-    icon: Clock,
-    title: "Fast Response",
-    description: "Average response time under 2 hours",
-  },
-  {
-    icon: Headphones,
-    title: "24/7 Support",
-    description: "Round-the-clock technical assistance",
-  },
-  {
-    icon: Shield,
-    title: "Secure Handling",
-    description: "Your data is protected and encrypted",
-  },
+  { icon: Clock, title: "Fast Response", description: "Average response time under 2 hours" },
+  { icon: Headphones, title: "24/7 Support", description: "Round-the-clock technical assistance" },
+  { icon: Shield, title: "Secure Handling", description: "Your data is protected and encrypted" },
 ];
 
-const ticketSchema = z.object({
+const signUpSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  issueTitle: z.string().min(3, "Title must be at least 3 characters"),
-  description: z.string().min(10, "Please provide more details"),
-  priority: z.string().min(1, "Please select a priority"),
 });
 
-const loggedInTicketSchema = z.object({
+const signInSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+const ticketSchema = z.object({
   issueTitle: z.string().min(3, "Title must be at least 3 characters"),
   description: z.string().min(10, "Please provide more details"),
   priority: z.string().min(1, "Please select a priority"),
@@ -73,155 +64,116 @@ export default function Support() {
   const { toast } = useToast();
   const { user, loading: authLoading, signUp, signIn } = useAuth();
   const navigate = useNavigate();
+
+  // Auth state
+  const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [authErrors, setAuthErrors] = useState<Record<string, string>>({});
+  const [authData, setAuthData] = useState({ fullName: "", email: "", password: "" });
+
+  // Ticket state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [ticketNumber, setTicketNumber] = useState("");
-  const [hasExistingAccount, setHasExistingAccount] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    issueTitle: "",
-    description: "",
-    priority: "",
-  });
+  const [ticketErrors, setTicketErrors] = useState<Record<string, string>>({});
+  const [ticketData, setTicketData] = useState({ issueTitle: "", description: "", priority: "" });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({});
-    
-    if (!formData.priority) {
-      setErrors({ priority: "Please select a priority level" });
+    setAuthErrors({});
+    setIsAuthLoading(true);
+
+    try {
+      if (authMode === "signup") {
+        const result = signUpSchema.safeParse(authData);
+        if (!result.success) {
+          const fieldErrors: Record<string, string> = {};
+          result.error.errors.forEach((err) => {
+            if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
+          });
+          setAuthErrors(fieldErrors);
+          return;
+        }
+        const { error } = await signUp(authData.email, authData.password, authData.fullName);
+        if (error) {
+          if (error.message.includes("already registered")) {
+            toast({ title: "Account exists", description: "This email is already registered. Please sign in instead.", variant: "destructive" });
+            setAuthMode("signin");
+          } else {
+            toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
+          }
+          return;
+        }
+        toast({ title: "Account created!", description: "You can now submit your support ticket." });
+      } else {
+        const result = signInSchema.safeParse(authData);
+        if (!result.success) {
+          const fieldErrors: Record<string, string> = {};
+          result.error.errors.forEach((err) => {
+            if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
+          });
+          setAuthErrors(fieldErrors);
+          return;
+        }
+        const { error } = await signIn(authData.email, authData.password);
+        if (error) {
+          toast({ title: "Sign in failed", description: "Invalid email or password.", variant: "destructive" });
+          return;
+        }
+        toast({ title: "Signed in!", description: "You can now submit your support ticket." });
+      }
+    } finally {
+      setIsAuthLoading(false);
+    }
+  };
+
+  const handleTicketSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTicketErrors({});
+
+    if (!ticketData.priority) {
+      setTicketErrors({ priority: "Please select a priority level" });
+      return;
+    }
+
+    const validation = ticketSchema.safeParse(ticketData);
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
+      });
+      setTicketErrors(fieldErrors);
       return;
     }
 
     setIsSubmitting(true);
-
     try {
-      let currentUser = user;
-
-      // If not logged in, create account or sign in first
-      if (!currentUser) {
-        const validation = ticketSchema.safeParse(formData);
-        if (!validation.success) {
-          const fieldErrors: Record<string, string> = {};
-          validation.error.errors.forEach((err) => {
-            if (err.path[0]) {
-              fieldErrors[err.path[0] as string] = err.message;
-            }
-          });
-          setErrors(fieldErrors);
-          setIsSubmitting(false);
-          return;
-        }
-
-        if (hasExistingAccount) {
-          // Sign in existing user
-          const { error } = await signIn(formData.email, formData.password);
-          if (error) {
-            toast({
-              title: "Sign in failed",
-              description: "Invalid email or password. Please try again.",
-              variant: "destructive",
-            });
-            setIsSubmitting(false);
-            return;
-          }
-        } else {
-          // Create new account
-          const { error } = await signUp(formData.email, formData.password, formData.fullName);
-          if (error) {
-            if (error.message.includes("already registered")) {
-              toast({
-                title: "Account exists",
-                description: "This email is already registered. Please check 'I have an account' and sign in.",
-                variant: "destructive",
-              });
-              setHasExistingAccount(true);
-            } else {
-              toast({
-                title: "Account creation failed",
-                description: error.message,
-                variant: "destructive",
-              });
-            }
-            setIsSubmitting(false);
-            return;
-          }
-        }
-
-        // Wait for auth state to update
-        const { data: { session } } = await supabase.auth.getSession();
-        currentUser = session?.user ?? null;
-
-        if (!currentUser) {
-          toast({
-            title: "Error",
-            description: "Authentication failed. Please try again.",
-            variant: "destructive",
-          });
-          setIsSubmitting(false);
-          return;
-        }
-      } else {
-        // User is logged in, validate ticket fields only
-        const validation = loggedInTicketSchema.safeParse(formData);
-        if (!validation.success) {
-          const fieldErrors: Record<string, string> = {};
-          validation.error.errors.forEach((err) => {
-            if (err.path[0]) {
-              fieldErrors[err.path[0] as string] = err.message;
-            }
-          });
-          setErrors(fieldErrors);
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // Submit the ticket
       const { data, error } = await supabase
         .from("tickets")
         .insert({
-          user_id: currentUser.id,
-          title: formData.issueTitle,
-          description: formData.description,
-          priority: formData.priority as "low" | "medium" | "high" | "urgent",
+          user_id: user!.id,
+          title: ticketData.issueTitle,
+          description: ticketData.description,
+          priority: ticketData.priority as "low" | "medium" | "high" | "urgent",
           ticket_number: "TEMP",
         })
         .select("ticket_number")
         .single();
 
       if (error) {
-        toast({
-          title: "Error",
-          description: "Failed to submit ticket. Please try again.",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
+        toast({ title: "Error", description: "Failed to submit ticket. Please try again.", variant: "destructive" });
         return;
       }
 
       setTicketNumber(data.ticket_number);
       setSubmitted(true);
-
-      toast({
-        title: "Ticket Submitted Successfully!",
-        description: `Your ticket ID is ${data.ticket_number}. Use your email and password to track it.`,
-      });
+      toast({ title: "Ticket Submitted!", description: `Your ticket ID is ${data.ticket_number}.` });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
-  };
-
+  // Success screen
   if (submitted) {
     return (
       <Layout>
@@ -231,24 +183,17 @@ export default function Support() {
               <div className="w-20 h-20 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-6">
                 <CheckCircle2 className="w-10 h-10 text-accent" />
               </div>
-              <h1 className="text-3xl font-display font-bold text-foreground mb-4">
-                Ticket Submitted!
-              </h1>
+              <h1 className="text-3xl font-display font-bold text-foreground mb-4">Ticket Submitted!</h1>
               <p className="text-muted-foreground mb-6">
-                Thank you for contacting Cortylix IT Support. Your ticket has been
-                received and our team will respond shortly.
+                Thank you for contacting Cortylix IT Support. Your ticket has been received and our team will respond shortly.
               </p>
               <div className="glass-card rounded-xl p-6 mb-4">
-                <p className="text-sm text-muted-foreground mb-2">
-                  Your Ticket ID
-                </p>
-                <p className="text-2xl font-display font-bold text-primary">
-                  {ticketNumber}
-                </p>
+                <p className="text-sm text-muted-foreground mb-2">Your Ticket ID</p>
+                <p className="text-2xl font-display font-bold text-primary">{ticketNumber}</p>
               </div>
               <div className="glass-card rounded-xl p-4 mb-8 bg-primary/5 border-primary/20">
                 <p className="text-sm text-muted-foreground">
-                  Use your email <span className="font-medium text-foreground">{formData.email || user?.email}</span> and password to track your ticket status.
+                  Use your email <span className="font-medium text-foreground">{user?.email}</span> and password to track your ticket status.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -257,7 +202,7 @@ export default function Support() {
                 </Link>
                 <Button variant="outline" onClick={() => {
                   setSubmitted(false);
-                  setFormData({ fullName: "", email: "", password: "", issueTitle: "", description: "", priority: "" });
+                  setTicketData({ issueTitle: "", description: "", priority: "" });
                 }}>
                   Submit Another Ticket
                 </Button>
@@ -271,7 +216,7 @@ export default function Support() {
 
   return (
     <Layout>
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="py-12 lg:py-16 bg-secondary/30">
         <div className="container mx-auto">
           <div className="max-w-3xl">
@@ -285,8 +230,7 @@ export default function Support() {
               Submit a Support Ticket
             </h1>
             <p className="text-muted-foreground text-lg">
-              Experiencing technical issues? Submit a ticket and our expert team
-              will assist you as quickly as possible.
+              Experiencing technical issues? Submit a ticket and our expert team will assist you as quickly as possible.
             </p>
           </div>
         </div>
@@ -302,12 +246,8 @@ export default function Support() {
                   <feature.icon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">
-                    {feature.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {feature.description}
-                  </p>
+                  <h3 className="font-semibold text-foreground">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm">{feature.description}</p>
                 </div>
               </div>
             ))}
@@ -315,250 +255,217 @@ export default function Support() {
         </div>
       </section>
 
-      {/* Form Section */}
+      {/* Main Content */}
       <section className="section-padding bg-background">
         <div className="container mx-auto">
           <div className="grid lg:grid-cols-3 gap-12">
-            {/* Form */}
             <div className="lg:col-span-2">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Account fields - only show when not logged in */}
-                {!authLoading && !user && (
-                  <div className="glass-card rounded-xl p-6 space-y-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-foreground">Your Account</h3>
-                      <label className="flex items-center gap-2 text-sm">
-                        <input
-                          type="checkbox"
-                          checked={hasExistingAccount}
-                          onChange={(e) => setHasExistingAccount(e.target.checked)}
-                          className="rounded border-border"
-                        />
-                        <span className="text-muted-foreground">I already have an account</span>
-                      </label>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {hasExistingAccount 
-                        ? "Sign in with your existing credentials to submit a ticket."
-                        : "Create an account to submit and track your support tickets."}
-                    </p>
-                    
-                    {!hasExistingAccount && (
+              {/* Step 1: Auth - shown when not logged in */}
+              {!authLoading && !user && (
+                <div className="glass-card rounded-2xl p-8 mb-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center font-bold">1</div>
+                    <h2 className="text-xl font-display font-semibold text-foreground">
+                      {authMode === "signup" ? "Create Your Account" : "Sign In to Your Account"}
+                    </h2>
+                  </div>
+                  <p className="text-muted-foreground text-sm mb-6">
+                    {authMode === "signup"
+                      ? "Create an account to submit and track your support tickets. Your credentials will be used to check ticket status."
+                      : "Sign in with your existing account to submit a new ticket."}
+                  </p>
+
+                  <form onSubmit={handleAuthSubmit} className="space-y-4">
+                    {authMode === "signup" && (
                       <div className="space-y-2">
                         <Label htmlFor="fullName">Full Name *</Label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                           <Input
                             id="fullName"
-                            name="fullName"
                             placeholder="John Doe"
-                            value={formData.fullName}
-                            onChange={handleChange}
+                            value={authData.fullName}
+                            onChange={(e) => { setAuthData({ ...authData, fullName: e.target.value }); setAuthErrors({ ...authErrors, fullName: "" }); }}
                             className="pl-10"
                           />
                         </div>
-                        {errors.fullName && (
-                          <p className="text-destructive text-sm">{errors.fullName}</p>
-                        )}
+                        {authErrors.fullName && <p className="text-destructive text-sm">{authErrors.fullName}</p>}
                       </div>
                     )}
 
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
+                      <Label htmlFor="authEmail">Email *</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
-                          id="email"
-                          name="email"
+                          id="authEmail"
                           type="email"
                           placeholder="john@example.com"
-                          value={formData.email}
-                          onChange={handleChange}
+                          value={authData.email}
+                          onChange={(e) => { setAuthData({ ...authData, email: e.target.value }); setAuthErrors({ ...authErrors, email: "" }); }}
                           className="pl-10"
                         />
                       </div>
-                      {errors.email && (
-                        <p className="text-destructive text-sm">{errors.email}</p>
-                      )}
+                      {authErrors.email && <p className="text-destructive text-sm">{authErrors.email}</p>}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="password">Password *</Label>
+                      <Label htmlFor="authPassword">Password *</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
-                          id="password"
-                          name="password"
+                          id="authPassword"
                           type="password"
                           placeholder="••••••••"
-                          value={formData.password}
-                          onChange={handleChange}
+                          value={authData.password}
+                          onChange={(e) => { setAuthData({ ...authData, password: e.target.value }); setAuthErrors({ ...authErrors, password: "" }); }}
                           className="pl-10"
                         />
                       </div>
-                      {errors.password && (
-                        <p className="text-destructive text-sm">{errors.password}</p>
-                      )}
-                      {!hasExistingAccount && (
-                        <p className="text-xs text-muted-foreground">
-                          Remember this password - you'll need it to track your ticket.
-                        </p>
+                      {authErrors.password && <p className="text-destructive text-sm">{authErrors.password}</p>}
+                      {authMode === "signup" && (
+                        <p className="text-xs text-muted-foreground">Min 6 characters. You'll use this to track your tickets later.</p>
                       )}
                     </div>
-                  </div>
-                )}
 
-                {/* Logged in user indicator */}
-                {user && (
-                  <div className="glass-card rounded-xl p-4 bg-primary/5 border-primary/20">
+                    <Button type="submit" className="w-full" disabled={isAuthLoading}>
+                      {isAuthLoading ? "Please wait..." : authMode === "signup" ? "Create Account" : "Sign In"}
+                      {!isAuthLoading && (authMode === "signup" ? <User className="w-4 h-4" /> : <LogIn className="w-4 h-4" />)}
+                    </Button>
+                  </form>
+
+                  <p className="text-muted-foreground text-sm text-center mt-4">
+                    {authMode === "signup" ? "Already have an account?" : "Don't have an account?"}{" "}
+                    <button
+                      type="button"
+                      onClick={() => { setAuthMode(authMode === "signup" ? "signin" : "signup"); setAuthErrors({}); }}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {authMode === "signup" ? "Sign in" : "Sign up"}
+                    </button>
+                  </p>
+                </div>
+              )}
+
+              {/* Step 2: Ticket Form - shown when logged in */}
+              {user && (
+                <>
+                  <div className="glass-card rounded-xl p-4 bg-primary/5 border-primary/20 mb-6">
                     <p className="text-sm text-muted-foreground">
-                      Submitting as <span className="font-medium text-foreground">{user.email}</span>
+                      Logged in as <span className="font-medium text-foreground">{user.email}</span>
                     </p>
                   </div>
-                )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="issueTitle">Issue Title *</Label>
-                  <Input
-                    id="issueTitle"
-                    name="issueTitle"
-                    placeholder="Brief description of the issue"
-                    value={formData.issueTitle}
-                    onChange={handleChange}
-                    required
-                  />
-                  {errors.issueTitle && (
-                    <p className="text-destructive text-sm">{errors.issueTitle}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Detailed Description *</Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    placeholder="Please provide as much detail as possible about your issue, including any error messages, steps to reproduce, and when the issue started..."
-                    rows={6}
-                    value={formData.description}
-                    onChange={handleChange}
-                    required
-                  />
-                  {errors.description && (
-                    <p className="text-destructive text-sm">{errors.description}</p>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label>Priority Level *</Label>
-                    <Select
-                      value={formData.priority}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, priority: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {priorities.map((priority) => (
-                          <SelectItem key={priority.value} value={priority.value}>
-                            <div className="flex items-center gap-2">
-                              <span>{priority.label}</span>
-                              <span className="text-muted-foreground text-xs">
-                                - {priority.description}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.priority && (
-                      <p className="text-destructive text-sm">{errors.priority}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Attachment (Optional)</Label>
-                    <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                      <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">
-                        Click to upload logs or screenshots
-                      </p>
+                  <div className="glass-card rounded-2xl p-8">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center font-bold">
+                        {!authLoading ? "✓" : "2"}
+                      </div>
+                      <h2 className="text-xl font-display font-semibold text-foreground">Describe Your Issue</h2>
                     </div>
-                  </div>
-                </div>
 
-                <Button type="submit" size="lg" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <span className="animate-pulse">Submitting...</span>
-                    </>
-                  ) : (
-                    <>
-                      {!user ? (hasExistingAccount ? "Sign In & Submit Ticket" : "Create Account & Submit Ticket") : "Submit Ticket"}
-                      <Zap className="w-4 h-4" />
-                    </>
-                  )}
-                </Button>
-              </form>
+                    <form onSubmit={handleTicketSubmit} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="issueTitle">Issue Title *</Label>
+                        <Input
+                          id="issueTitle"
+                          placeholder="Brief description of the issue"
+                          value={ticketData.issueTitle}
+                          onChange={(e) => { setTicketData({ ...ticketData, issueTitle: e.target.value }); setTicketErrors({ ...ticketErrors, issueTitle: "" }); }}
+                        />
+                        {ticketErrors.issueTitle && <p className="text-destructive text-sm">{ticketErrors.issueTitle}</p>}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="description">Detailed Description *</Label>
+                        <Textarea
+                          id="description"
+                          placeholder="Please provide as much detail as possible about your issue..."
+                          rows={6}
+                          value={ticketData.description}
+                          onChange={(e) => { setTicketData({ ...ticketData, description: e.target.value }); setTicketErrors({ ...ticketErrors, description: "" }); }}
+                        />
+                        {ticketErrors.description && <p className="text-destructive text-sm">{ticketErrors.description}</p>}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label>Priority Level *</Label>
+                          <Select
+                            value={ticketData.priority}
+                            onValueChange={(value) => setTicketData({ ...ticketData, priority: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select priority" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {priorities.map((p) => (
+                                <SelectItem key={p.value} value={p.value}>
+                                  <div className="flex items-center gap-2">
+                                    <span>{p.label}</span>
+                                    <span className="text-muted-foreground text-xs">- {p.description}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {ticketErrors.priority && <p className="text-destructive text-sm">{ticketErrors.priority}</p>}
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Attachment (Optional)</Label>
+                          <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                            <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
+                            <p className="text-sm text-muted-foreground">Click to upload</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button type="submit" size="lg" disabled={isSubmitting}>
+                        {isSubmitting ? <span className="animate-pulse">Submitting...</span> : (
+                          <>Submit Ticket <Zap className="w-4 h-4" /></>
+                        )}
+                      </Button>
+                    </form>
+                  </div>
+                </>
+              )}
+
+              {/* Not logged in - disabled ticket preview */}
+              {!authLoading && !user && (
+                <div className="glass-card rounded-2xl p-8 opacity-50 pointer-events-none">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 rounded-full bg-muted text-muted-foreground text-sm flex items-center justify-center font-bold">2</div>
+                    <h2 className="text-xl font-display font-semibold text-muted-foreground">Describe Your Issue</h2>
+                  </div>
+                  <p className="text-muted-foreground text-sm">Create an account or sign in first to submit your ticket.</p>
+                </div>
+              )}
             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
               <div className="glass-card rounded-2xl p-6">
-                <h3 className="font-display font-semibold text-foreground mb-4">
-                  What happens next?
-                </h3>
+                <h3 className="font-display font-semibold text-foreground mb-4">What happens next?</h3>
                 <ol className="space-y-4">
-                  <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">
-                      1
-                    </span>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        Ticket Created
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        You'll receive a confirmation with your ticket ID
-                      </p>
-                    </div>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">
-                      2
-                    </span>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        Team Review
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        Our experts assess your issue
-                      </p>
-                    </div>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">
-                      3
-                    </span>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        Track Status
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        Use your email & password to check updates
-                      </p>
-                    </div>
-                  </li>
+                  {[
+                    { step: "1", title: "Create Account", desc: "Sign up with your email and password" },
+                    { step: "2", title: "Submit Ticket", desc: "Describe your issue and set priority" },
+                    { step: "3", title: "Track Status", desc: "Use your credentials to check updates" },
+                  ].map((item) => (
+                    <li key={item.step} className="flex gap-3">
+                      <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center flex-shrink-0">{item.step}</span>
+                      <div>
+                        <p className="font-medium text-foreground">{item.title}</p>
+                        <p className="text-muted-foreground text-sm">{item.desc}</p>
+                      </div>
+                    </li>
+                  ))}
                 </ol>
               </div>
 
               <div className="glass-card rounded-2xl p-6">
-                <h3 className="font-display font-semibold text-foreground mb-3">
-                  Already submitted a ticket?
-                </h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Track your existing tickets by signing in with your email and password.
-                </p>
+                <h3 className="font-display font-semibold text-foreground mb-3">Already submitted a ticket?</h3>
+                <p className="text-muted-foreground text-sm mb-4">Track your existing tickets by signing in.</p>
                 <Link to="/track-ticket">
                   <Button variant="outline" className="w-full">Track My Tickets</Button>
                 </Link>
@@ -568,15 +475,9 @@ export default function Support() {
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">
-                      Emergency Support
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-3">
-                      For critical system outages, call our emergency hotline:
-                    </p>
-                    <p className="font-semibold text-foreground">
-                      +1 (800) 555-0199
-                    </p>
+                    <h3 className="font-semibold text-foreground mb-1">Emergency Support</h3>
+                    <p className="text-muted-foreground text-sm mb-3">For critical system outages, call our emergency hotline:</p>
+                    <p className="font-semibold text-foreground">+1 (800) 555-0199</p>
                   </div>
                 </div>
               </div>
