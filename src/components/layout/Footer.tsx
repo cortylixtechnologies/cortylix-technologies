@@ -31,12 +31,13 @@ export function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-xl">C</span>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center shadow-md">
+                <span className="text-primary-foreground font-display font-bold text-lg tracking-tight">CT</span>
               </div>
-              <span className="font-display font-semibold text-xl">
-                Cortylix
-              </span>
+              <div className="flex flex-col leading-none">
+                <span className="font-display font-bold text-lg">Cortylix</span>
+                <span className="text-[10px] font-medium text-primary-foreground/60 tracking-widest uppercase">Technologies</span>
+              </div>
             </Link>
             <p className="text-primary-foreground/70 mb-6 max-w-sm">
               Empowering digital growth with intelligent solutions. Your trusted partner for IT services and technology innovation.

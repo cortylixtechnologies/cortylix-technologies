@@ -165,16 +165,7 @@ export function Navbar() {
                   <Button className="w-full" onClick={() => { handleSignOut(); setIsOpen(false); }}>
                     Sign Out
                   </Button>
-                ) : (
-                  <>
-                    <Link to="/track-ticket" onClick={() => setIsOpen(false)}>
-                      <Button variant="ghost" className="w-full">Track Ticket</Button>
-                    </Link>
-                    <Link to="/auth" onClick={() => setIsOpen(false)}>
-                      <Button variant="outline" className="w-full">Admin Login</Button>
-                    </Link>
-                  </>
-                )}
+                ) : null}
               </div>
             </div>
           </div>
