@@ -16,7 +16,8 @@ const footerLinks = {
   ],
   support: [
     { name: "Submit Ticket", href: "/support" },
-    { name: "Documentation", href: "#" },
+    { name: "Track Ticket", href: "/track-ticket" },
+    { name: "Admin Login", href: "/auth" },
     { name: "FAQs", href: "#" },
     { name: "Status", href: "#" },
   ],
