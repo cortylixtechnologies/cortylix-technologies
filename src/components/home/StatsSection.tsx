@@ -12,7 +12,6 @@ const stats: StatItem[] = [
   { icon: Users, value: 150, suffix: "+", label: "Happy Clients" },
   { icon: FolderCheck, value: 500, suffix: "+", label: "Projects Completed" },
   { icon: Calendar, value: 10, suffix: "+", label: "Years of Experience" },
-  { icon: TrendingUp, value: 5, suffix: "M+", label: "Revenue Generated" },
 ];
 
 function useCountUp(end: number, duration: number = 2000, start: boolean = false) {
