@@ -95,7 +95,7 @@ export function StatsSection() {
             Driving Results That Matter
           </h2>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 max-w-4xl mx-auto">
           {stats.map((stat, index) => (
             <StatCard key={stat.label} stat={stat} inView={inView} />
           ))}
