@@ -27,10 +27,23 @@ const slideshowImages = [
   },
 ];
 
+// Preload first image
+const preloadLink = document.createElement("link");
+preloadLink.rel = "preload";
+preloadLink.as = "image";
+preloadLink.href = slideshowImages[0].url;
+document.head.appendChild(preloadLink);
+
 export function HeroSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    // Preload all slideshow images
+    slideshowImages.forEach((img) => {
+      const image = new Image();
+      image.src = img.url;
+    });
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % slideshowImages.length);
     }, 5000);
@@ -52,6 +65,8 @@ export function HeroSection() {
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
             className="w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
           />
         </AnimatePresence>
         {/* Light overlay for text visibility */}
@@ -63,8 +78,8 @@ export function HeroSection() {
       <div className="absolute inset-0 grid-pattern opacity-20" />
       
       <div className="container mx-auto relative">
-        <div className="min-h-[calc(100vh-5rem)] flex items-center py-20">
-          <div className="max-w-3xl">
+        <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center py-20">
+          <div className="max-w-4xl text-center">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-8 animate-fade-up backdrop-blur-sm">
               <Sparkles className="w-4 h-4 text-primary" />
@@ -75,17 +90,17 @@ export function HeroSection() {
 
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-foreground leading-tight mb-6 animate-fade-up animation-delay-100">
-              Your Trusted Partner in{" "}
-              <span className="gradient-text">IT & Cybersecurity</span>
+              Securing and Empowering Your{" "}
+              <span className="gradient-text">Digital World</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg lg:text-xl text-muted-foreground max-w-xl mb-10 animate-fade-up animation-delay-200">
-              We specialize in cybersecurity, web development, IT support, and complete technology solutions — protecting your digital assets while building the tools your business needs to thrive.
+            <p className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 animate-fade-up animation-delay-200">
+              We provide end-to-end technology solutions — from cybersecurity and web development to IT support, software solutions, and cloud services. At CORTYLIX TECHNOLOGIES, we protect your digital assets, streamline your operations, and create the tools your business needs to grow and thrive in today's digital landscape.
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-4 mb-12 animate-fade-up animation-delay-300">
+            <div className="flex flex-wrap justify-center gap-4 mb-12 animate-fade-up animation-delay-300">
               <Link to="/contact">
                 <Button variant="hero" size="xl">
                   Get Started
@@ -100,7 +115,7 @@ export function HeroSection() {
             </div>
 
             {/* Trust Indicators */}
-            <div className="flex flex-wrap gap-6 animate-fade-up animation-delay-400">
+            <div className="flex flex-wrap justify-center gap-6 animate-fade-up animation-delay-400">
               <div className="flex items-center gap-3 backdrop-blur-sm bg-primary/5 border border-primary/20 px-4 py-3 rounded-xl">
                 <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
                   <Shield className="w-5 h-5 text-primary" />
