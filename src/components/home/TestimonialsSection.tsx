@@ -2,22 +2,22 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Cortylix transformed our IT infrastructure. Their 24/7 support has been invaluable for our operations.",
-    author: "Sarah Chen",
-    role: "CTO, TechVentures Inc.",
-    avatar: "SC",
+    quote: "Cortylix built our company website from scratch and it looks amazing. Fast, responsive, and exactly what we needed to grow our online presence.",
+    author: "James Mwangi",
+    role: "Founder, BrightPath Solutions",
+    avatar: "JM",
   },
   {
-    quote: "The AI solution they built increased our efficiency by 60%. Highly recommend their ML expertise.",
-    author: "Michael Roberts",
-    role: "Director of Operations, DataFlow",
-    avatar: "MR",
+    quote: "Our systems kept crashing until Cortylix stepped in. They diagnosed and fixed everything within hours. Our operations have been smooth ever since.",
+    author: "Amina Osei",
+    role: "Operations Manager, LogiTech Hub",
+    avatar: "AO",
   },
   {
-    quote: "Professional, responsive, and innovative. Cortylix is our go-to partner for all technology needs.",
-    author: "Emily Johnson",
-    role: "CEO, GrowthScale",
-    avatar: "EJ",
+    quote: "They redesigned our outdated website and set up proper security. We've had zero downtime and our customers love the new look.",
+    author: "David Kimani",
+    role: "CEO, UrbanTrade Ltd.",
+    avatar: "DK",
   },
 ];
 
