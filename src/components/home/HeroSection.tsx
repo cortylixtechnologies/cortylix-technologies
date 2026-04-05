@@ -6,23 +6,23 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const slideshowImages = [
   {
-    url: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&h=1080&fit=crop",
+    url: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=75&fit=crop",
     alt: "Technology circuit board",
   },
   {
-    url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&h=1080&fit=crop",
+    url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=75&fit=crop",
     alt: "Global network connections",
   },
   {
-    url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1920&h=1080&fit=crop",
+    url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=75&fit=crop",
     alt: "Cybersecurity concept",
   },
   {
-    url: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=1920&h=1080&fit=crop",
+    url: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=1200&q=75&fit=crop",
     alt: "Modern laptop setup",
   },
   {
-    url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1920&h=1080&fit=crop",
+    url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&q=75&fit=crop",
     alt: "Data visualization",
   },
 ];
