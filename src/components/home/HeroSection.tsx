@@ -75,13 +75,13 @@ export function HeroSection() {
 
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-foreground leading-tight mb-6 animate-fade-up animation-delay-100">
-              Empowering Digital Growth with{" "}
-              <span className="gradient-text">Intelligent Solutions</span>
+              Your Trusted Partner in{" "}
+              <span className="gradient-text">IT & Cybersecurity</span>
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg lg:text-xl text-muted-foreground max-w-xl mb-10 animate-fade-up animation-delay-200">
-              From AI-powered automation to cloud infrastructure, we deliver cutting-edge technology solutions that transform businesses and drive innovation.
+              We specialize in cybersecurity, web development, IT support, and complete technology solutions — protecting your digital assets while building the tools your business needs to thrive.
             </p>
 
             {/* CTA Buttons */}
