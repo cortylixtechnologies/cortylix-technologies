@@ -20,7 +20,7 @@ export async function logAdminAction(
   action: string,
   targetType: string,
   targetId?: string,
-  details?: Record<string, unknown>
+  details?: Record<string, string | number | boolean | null>
 ) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
@@ -30,6 +30,6 @@ export async function logAdminAction(
     action,
     target_type: targetType,
     target_id: targetId || null,
-    details: details || {},
+    details: (details || {}) as Record<string, string | number | boolean | null>,
   }]);
 }
