@@ -19,19 +19,19 @@ const contactInfo = [
   {
     icon: Mail,
     label: "Email",
-    value: "contact@cortylix.com",
-    href: "mailto:contact@cortylix.com",
+    value: "cortylix@gmail.com",
+    href: "mailto:cortylix@gmail.com",
   },
   {
     icon: Phone,
     label: "Phone",
-    value: "+1 (234) 567-890",
-    href: "tel:+1234567890",
+    value: "+255 756 377 013",
+    href: "tel:+255756377013",
   },
   {
     icon: MapPin,
     label: "Location",
-    value: "123 Tech Avenue, San Francisco, CA 94102",
+    value: "Dar es Salaam, Tanzania",
     href: "#",
   },
   {
