@@ -118,13 +118,13 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-primary-foreground/10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="flex flex-wrap gap-6">
-              <a href="mailto:contact@cortylix.com" className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+              <a href="mailto:cortylix@gmail.com" className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                 <Mail className="w-4 h-4" />
-                <span>contact@cortylix.com</span>
+                <span>cortylix@gmail.com</span>
               </a>
-              <a href="tel:+1234567890" className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+              <a href="tel:+255756377013" className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                 <Phone className="w-4 h-4" />
-                <span>+1 (234) 567-890</span>
+                <span>+255 756 377 013</span>
               </a>
             </div>
             <p className="text-primary-foreground/50 text-sm">
