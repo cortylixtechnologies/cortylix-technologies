@@ -324,6 +324,10 @@ export default function Admin() {
             <TabsContent value="portfolio">
               <PortfolioManager />
             </TabsContent>
+
+            <TabsContent value="security">
+              <SecurityDashboard />
+            </TabsContent>
           </Tabs>
         </div>
       </section>
