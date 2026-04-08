@@ -16,6 +16,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { PortfolioManager } from "@/components/admin/PortfolioManager";
+import { SecurityDashboard } from "@/components/admin/SecurityDashboard";
+import { logAdminAction } from "@/lib/audit";
 import {
   Shield,
   Clock,
@@ -27,6 +29,7 @@ import {
   X,
   Ticket,
   FolderKanban,
+  ShieldAlert,
 } from "lucide-react";
 
 interface TicketType {
@@ -139,6 +142,12 @@ export default function Admin() {
         variant: "destructive",
       });
     } else {
+      await logAdminAction(
+        `ticket_${status}`,
+        "ticket",
+        ticketId,
+        { status, notes: adminNotes || null }
+      );
       toast({
         title: "Ticket Updated",
         description: `Ticket has been ${status}.`,
@@ -198,6 +207,10 @@ export default function Admin() {
               <TabsTrigger value="portfolio" className="gap-2">
                 <FolderKanban className="w-4 h-4" />
                 Portfolio
+              </TabsTrigger>
+              <TabsTrigger value="security" className="gap-2">
+                <ShieldAlert className="w-4 h-4" />
+                Security
               </TabsTrigger>
             </TabsList>
 
