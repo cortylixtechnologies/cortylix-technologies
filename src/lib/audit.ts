@@ -25,11 +25,11 @@ export async function logAdminAction(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
-  await supabase.from("admin_audit_logs").insert({
+  await supabase.from("admin_audit_logs").insert([{
     admin_user_id: user.id,
     action,
     target_type: targetType,
     target_id: targetId || null,
     details: details || {},
-  });
+  }]);
 }
