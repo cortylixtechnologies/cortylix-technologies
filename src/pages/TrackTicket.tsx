@@ -60,7 +60,7 @@ export default function TrackTicket() {
       if (error) {
         toast({
           title: "Sign in failed",
-          description: "Invalid email or password. Please try again.",
+          description: "Invalid email or password. Please Try Again.",
           variant: "destructive",
         });
       }
@@ -97,7 +97,7 @@ export default function TrackTicket() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="john@example.com"
+                      placeholder="email@example.com"
                       value={formData.email}
                       onChange={handleChange}
                       className="pl-10"
