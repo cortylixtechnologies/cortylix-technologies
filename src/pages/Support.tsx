@@ -185,7 +185,7 @@ export default function Support() {
               </div>
               <h1 className="text-3xl font-display font-bold text-foreground mb-4">Ticket Submitted!</h1>
               <p className="text-muted-foreground mb-6">
-                Thank you for contacting Cortylix IT Support. Your ticket has been received and our team will respond shortly.
+                Thanks for contacting Elivion Technologies. Your ticket has been received and our team will respond shortly.
               </p>
               <div className="glass-card rounded-xl p-6 mb-4">
                 <p className="text-sm text-muted-foreground mb-2">Your Ticket ID</p>
@@ -198,7 +198,7 @@ export default function Support() {
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link to="/my-tickets">
-                  <Button>View My Tickets</Button>
+                  <Button>My Tickets</Button>
                 </Link>
                 <Button variant="outline" onClick={() => {
                   setSubmitted(false);
@@ -230,7 +230,7 @@ export default function Support() {
               Submit a Support Ticket
             </h1>
             <p className="text-muted-foreground text-lg">
-              Experiencing technical issues? Submit a ticket and our expert team will assist you as quickly as possible.
+             Are you Experiencing technical issues? Report a problem and and our expert team will assist you as quickly as possible.
             </p>
           </div>
         </div>
